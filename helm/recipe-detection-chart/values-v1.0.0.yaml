@@ -1,0 +1,12 @@
+recipeData:
+  chartVersion: 1.0.0
+  recipe:
+  - version: ""
+    releasedate: ""
+    retired: ""
+    servermodelgentype: ""
+    state: ""
+    storagemodel: ""
+    updatecomponents:
+      components: {}
+    upgradeto: []
