@@ -143,8 +143,8 @@ func (s *GitOpsService) getAuth() *http.BasicAuth {
 
 func (s *GitOpsService) generateValuesYaml(release *model.HelmRelease) (string, error) {
 	type RecipeData struct {
-		chartVersion string       `yaml:"chartVersion"`
-		Recipes      model.Recipe `yaml:"recipe"`
+		chartVersion string         `yaml:"chartVersion"`
+		Recipes      []model.Recipe `yaml:"recipe"`
 	}
 	type Root struct {
 		RecipeData RecipeData `yaml:"recipeData"`
