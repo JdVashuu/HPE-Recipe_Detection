@@ -22,6 +22,17 @@ func (s *CatalogService) GetAllCatalogs() []model.Catalog {
 	return s.catalogs
 }
 
+func (s *CatalogService) GetRecipesByCatalog(recipeVersion string) model.Recipe {
+	for _, c := range s.catalogs {
+		for _, r := range c.Recipes {
+			if r.Version == recipeVersion {
+				return r
+			}
+		}
+	}
+	return model.Recipe{}
+}
+
 func (s *CatalogService) GetComponentByRecipe(recipeVersion string) map[string]model.Component {
 	for _, c := range s.catalogs {
 		for _, r := range c.Recipes {
@@ -47,4 +58,15 @@ func buildCatalogs(path string) []model.Catalog {
 	}
 
 	return []model.Catalog{catalog}
+}
+
+func (s *CatalogService) GetUpgradePaths(recipeVersion string) []string {
+	for _, c := range s.catalogs {
+		for _, r := range c.Recipes {
+			if r.Version == recipeVersion {
+				return r.UpgradeTo
+			}
+		}
+	}
+	return []string{}
 }
