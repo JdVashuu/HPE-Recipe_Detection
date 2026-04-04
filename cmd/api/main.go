@@ -18,7 +18,7 @@ func main() {
 	}
 
 	//initialisation
-	if err := app.initialize(); err != nil {
+	if err := app.initialise(); err != nil {
 		log.Fatalf("Failed to initialize application: %v", err)
 	}
 

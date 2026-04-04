@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/JdVashuu/RecipeDetection.git/internal/env"
@@ -41,7 +42,7 @@ type application struct {
 func (app *application) setupK8sClient() (*kubernetes.Clientset, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		kubeconfig := env.GetString("KUBECONFIG", env.GetString("HOME")+"/.kube/config")
+		kubeconfig := env.GetString("KUBECONFIG", (os.Getenv("HOME") + "/.kube/config"))
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {
 			return nil, err
