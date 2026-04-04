@@ -17,6 +17,11 @@ func main() {
 		config: cfg,
 	}
 
+	//initialisation
+	if err := app.initialize(); err != nil {
+		log.Fatalf("Failed to initialize application: %v", err)
+	}
+
 	mux := app.mount()
 	log.Fatal(app.run(mux))
 }
