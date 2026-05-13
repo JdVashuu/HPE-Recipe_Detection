@@ -1,4 +1,4 @@
 bin/
 data/
-.env
+.envrc
 .DS_Store
