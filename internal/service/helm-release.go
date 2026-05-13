@@ -33,19 +33,23 @@ func NewHelmReleaseService(repo *repository.K8sConfigMapRepository) *HelmRelease
 func (s *HelmReleaseService) parseConfigMap(cm corev1.ConfigMap) (*model.HelmRelease, error) {
 	jsonData, ok := cm.Data[RecipeDataKey]
 	if !ok || jsonData == "" {
+		fmt.Printf("DEBUG : ConfigMap %s missingg key %s\n", cm.Name, RecipeDataKey)
 		return nil, fmt.Errorf("no recipe data found in ConfigMap %s", cm.Name)
 	}
 
+	fmt.Printf("DEBUG : Parsing Json for %s : %s\n", cm.Name, jsonData)
 	var data struct {
-		ChartVersion string         `json:"chart_version"`
+		ChartVersion string         `json:"chartVersion"`
 		Recipes      []model.Recipe `json:"recipes"`
 	}
 
 	err := json.Unmarshal([]byte(jsonData), &data)
 	if err != nil {
+		fmt.Printf("DEBUG : Unmarshal error for %s : %s\n", cm.Name, err)
 		return nil, err
 	}
 
+	fmt.Printf("DEBUG : parsed Version : %s\n", data.ChartVersion)
 	releaseName := cm.Annotations[AnnotationReleaseName]
 	if releaseName == "" {
 		releaseName = "unknown"
@@ -68,7 +72,8 @@ func (s *HelmReleaseService) GetAllHelmRelease(ctx context.Context) ([]model.Hel
 	byVersion := make(map[string]model.HelmRelease)
 	for _, cm := range cms {
 		release, err := s.parseConfigMap(cm)
-		if err != nil && release != nil {
+		if err == nil && release != nil {
+			// if err != nil {
 			if _, exists := byVersion[release.Version]; !exists {
 				byVersion[release.Version] = *release
 			}

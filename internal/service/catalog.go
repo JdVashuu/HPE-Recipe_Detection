@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/JdVashuu/RecipeDetection.git/internal/model"
 )
@@ -13,8 +15,13 @@ type CatalogService struct {
 }
 
 func NewCatalogService() *CatalogService {
+	_, filename, _, _ := runtime.Caller(0)
+	dir := filepath.Dir(filename)
+	// Go up to project root (service -> internal -> project root)
+	projectRoot := filepath.Join(dir, "..", "..")
+	dataPath := filepath.Join(projectRoot, "data", "recipes_hpe.json")
 	return &CatalogService{
-		catalogs: buildCatalogs("../data/recipes_hpe.json"),
+		catalogs: buildCatalogs(dataPath),
 	}
 }
 

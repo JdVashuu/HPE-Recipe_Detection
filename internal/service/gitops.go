@@ -62,7 +62,7 @@ func (s *GitOpsService) GenerateAndPush(release *model.HelmRelease) error {
 	valuesFilePath := filepath.Join(s.cfg.ValuesDir, valuesFileName)
 	fullValuesPath := filepath.Join(s.cfg.LocalPath, valuesFilePath)
 
-	err = os.Mkdir(filepath.Dir(fullValuesPath), 0755)
+	err = os.MkdirAll(filepath.Dir(fullValuesPath), 0755)
 	if err != nil {
 		return err
 	}
@@ -110,18 +110,20 @@ func (s *GitOpsService) GenerateAndPush(release *model.HelmRelease) error {
 		Auth:       s.getAuth(),
 	})
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil
 }
 
 func (s *GitOpsService) getOrCloneRepo() (*git.Repository, error) {
+	// Try to open existing repo
 	repo, err := git.PlainOpen(s.cfg.LocalPath)
-	if err != nil {
-		return repo, err
+	if err == nil {
+		return repo, nil
 	}
 
+	// If not found, clone it
 	return git.PlainClone(s.cfg.LocalPath, false, &git.CloneOptions{
 		URL:           s.cfg.RepoURL,
 		ReferenceName: plumbing.NewBranchReferenceName(s.cfg.Branch),
@@ -143,7 +145,7 @@ func (s *GitOpsService) getAuth() *http.BasicAuth {
 
 func (s *GitOpsService) generateValuesYaml(release *model.HelmRelease) (string, error) {
 	type RecipeData struct {
-		chartVersion string         `yaml:"chartVersion"`
+		ChartVersion string         `yaml:"chartVersion"`
 		Recipes      []model.Recipe `yaml:"recipe"`
 	}
 	type Root struct {
@@ -152,7 +154,7 @@ func (s *GitOpsService) generateValuesYaml(release *model.HelmRelease) (string, 
 
 	root := Root{
 		RecipeData: RecipeData{
-			chartVersion: release.Version,
+			ChartVersion: release.Version,
 			Recipes:      release.Recipes,
 		},
 	}

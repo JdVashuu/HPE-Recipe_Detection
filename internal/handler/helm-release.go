@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/JdVashuu/RecipeDetection.git/internal/model"
@@ -136,6 +137,7 @@ func (h *HelmReleaseHandler) DeployRelease(w http.ResponseWriter, r *http.Reques
 	go func() {
 		err := h.gitops.GenerateAndPush(release)
 		if err != nil {
+			log.Printf("ERROR : GitOps Deployment failed for version %s : %v", version, err)
 			release.Status = "push_failed"
 			h.hub.Broadcast("status_changed", map[string]interface{}{"version": version, "status": "push_failed"})
 		}
